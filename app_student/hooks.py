@@ -5,6 +5,9 @@ app_description = "QLDA"
 app_email = "huanthuytnhh@gmail.com"
 app_license = "mit"
 
+website_route_rules = [
+    {"from_route": "/student", "to_route": "crud_student"}
+]
 # Apps
 # ------------------
 
