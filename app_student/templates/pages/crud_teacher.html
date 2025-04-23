@@ -1,15 +1,13 @@
-<!-- File: crud_student.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Management</title>
+    <title>Teacher Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- CSRF Token -->
     <script>
-        window.csrf_token = "{{ frappe.session.csrf_token }}"; // Keep this if rendering via Frappe web route
-        // window.csrf_token = "YOUR_CSRF_TOKEN"; // Or manually set if testing standalone (not recommended for production)
+        window.csrf_token = "{{ frappe.session.csrf_token }}";
     </script>
 
     <!-- Bootstrap 5 CSS -->
@@ -47,23 +45,23 @@
 </head>
 <body>
     <div class="container mt-5 mb-5">
-        <h1 class="text-center mb-4 text-primary">Student Management</h1>
+        <h1 class="text-center mb-4 text-primary">Teacher Management</h1>
 
         <!-- Alert Placeholder -->
         <div id="alertPlaceholder"></div>
 
-        <!-- Student Form Card -->
+        <!-- Teacher Form Card -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
-                <h4 id="formTitle">Add New Student</h4>
+                <h4 id="formTitle">Add New Teacher</h4>
             </div>
             <div class="card-body">
-                <form id="studentForm">
-                    <input type="hidden" id="student_name">
+                <form id="teacherForm">
+                    <input type="hidden" id="teacher_name">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="student_id" class="form-label">Student ID <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="student_id" required>
+                            <label for="teacher_id" class="form-label">Teacher ID <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="teacher_id" required>
                         </div>
                         <div class="col-md-6">
                             <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
@@ -83,14 +81,14 @@
                             <input type="date" class="form-control" id="date_of_birth" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="enrollment_date" class="form-label">Enrollment Date <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="enrollment_date" required>
+                            <label for="hire_date" class="form-label">Hire Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="hire_date" required>
                         </div>
-                         <div class="col-md-6">
+                        <div class="col-md-6">
                             <label for="phone_number" class="form-label">Phone Number <span class="text-danger">*</span></label>
                             <input type="tel" class="form-control" id="phone_number" required pattern="[0-9\+\-\s()]*" title="Enter a valid phone number">
                         </div>
-                         <div class="col-md-12">
+                        <div class="col-md-12">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
@@ -107,10 +105,10 @@
             </div>
         </div>
 
-        <!-- Student List Card -->
+        <!-- Teacher List Card -->
         <div class="card">
             <div class="card-header bg-light">
-                <h4>Student List</h4>
+                <h4>Teacher List</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -121,15 +119,15 @@
                                 <th>Name</th>
                                 <th>Gender</th>
                                 <th>DOB</th>
-                                <th>Enrolled</th>
+                                <th>Hire Date</th>
                                 <th>Phone</th>
                                 <th>Email</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="studentsTable">
+                        <tbody id="teachersTable">
                             <tr>
-                                <td colspan="8" class="text-center">Loading students...</td>
+                                <td colspan="8" class="text-center">Loading teachers...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -147,19 +145,19 @@
 
     <script>
         // --- Configuration ---
-        const API_BASE_URL = '/api/resource/Student';
-        axios.defaults.withCredentials = true; // Important for session handling
+        const API_BASE_URL = '/api/resource/Teacher';
+        axios.defaults.withCredentials = true;
         axios.defaults.headers.common['X-Frappe-CSRF-Token'] = window.csrf_token;
 
         // --- DOM Elements ---
-        const studentForm = document.getElementById('studentForm');
-        const studentsTable = document.getElementById('studentsTable');
-        const studentNameInput = document.getElementById('student_name');
-        const studentIdInput = document.getElementById('student_id');
+        const teacherForm = document.getElementById('teacherForm');
+        const teachersTable = document.getElementById('teachersTable');
+        const teacherNameInput = document.getElementById('teacher_name');
+        const teacherIdInput = document.getElementById('teacher_id');
         const fullNameInput = document.getElementById('full_name');
         const genderInput = document.getElementById('gender');
         const dobInput = document.getElementById('date_of_birth');
-        const enrollmentDateInput = document.getElementById('enrollment_date');
+        const hireDateInput = document.getElementById('hire_date');
         const phoneInput = document.getElementById('phone_number');
         const emailInput = document.getElementById('email');
         const saveButton = document.getElementById('saveButton');
@@ -169,7 +167,6 @@
 
         // --- Utility Functions ---
         function showAlert(message, type = 'success') {
-            // Types: success, danger, warning, info
             const wrapper = document.createElement('div');
             wrapper.innerHTML = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -178,29 +175,25 @@
                 </div>
             `;
             alertPlaceholder.append(wrapper);
-
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                wrapper.remove();
-            }, 5000);
+            setTimeout(() => wrapper.remove(), 5000);
         }
 
         function clearForm() {
-            studentForm.reset();
-            studentNameInput.value = '';
-            formTitle.textContent = 'Add New Student';
+            teacherForm.reset();
+            teacherNameInput.value = '';
+            formTitle.textContent = 'Add New Teacher';
             saveButton.innerHTML = '<i class="bi bi-check-circle-fill"></i> Save';
             saveButton.disabled = false;
-            studentIdInput.readOnly = false; // Make Student ID editable again when clearing
+            teacherIdInput.readOnly = false;
         }
 
         function setFormState(isEditing, docname = '') {
             if (isEditing) {
-                formTitle.textContent = `Edit Student (${docname})`;
+                formTitle.textContent = `Edit Teacher (${docname})`;
                 saveButton.innerHTML = '<i class="bi bi-pencil-square"></i> Update';
-                studentIdInput.readOnly = true; // Usually, the unique ID isn't editable
+                teacherIdInput.readOnly = true;
             } else {
-                clearForm(); // Resets to 'Add New' state
+                clearForm();
             }
         }
 
@@ -213,76 +206,75 @@
                     ${currentText}...
                 `;
             } else {
-                // Restore original text based on form state
-                setFormState(!!studentNameInput.value, studentNameInput.value);
+                setFormState(!!teacherNameInput.value, teacherNameInput.value);
             }
         }
 
         // --- API Functions ---
-        async function loadStudents() {
-            studentsTable.innerHTML = '<tr><td colspan="8" class="text-center">Loading students... <span class="spinner-border spinner-border-sm"></span></td></tr>';
+        async function loadTeachers() {
+            teachersTable.innerHTML = '<tr><td colspan="8" class="text-center">Loading teachers... <span class="spinner-border spinner-border-sm"></span></td></tr>';
             try {
                 const res = await axios.get(API_BASE_URL, {
                     params: {
                         fields: JSON.stringify([
-                            "name", "student_id", "full_name", "gender", "date_of_birth",
-                            "enrollment_date", "phone_number", "email"
+                            "name", "teacher_id", "full_name", "gender", "date_of_birth",
+                            "hire_date", "phone_number", "email"
                         ]),
-                        limit_page_length: 100 // Fetch more if needed
+                        limit_page_length: 100
                     }
                 });
 
                 if (res.data && Array.isArray(res.data.data)) {
-                    const students = res.data.data;
-                    if (students.length === 0) {
-                        studentsTable.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No students found. Add one using the form above!</td></tr>';
+                    const teachers = res.data.data;
+                    if (teachers.length === 0) {
+                        teachersTable.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No teachers found. Add one using the form above!</td></tr>';
                         return;
                     }
 
-                    let rows = students.map(s => {
-                        const studentId = s.student_id || 'N/A';
-                        const fullName = s.full_name || 'N/A';
-                        const gender = s.gender || 'N/A';
-                        const dob = s.date_of_birth || 'N/A';
-                        const enrollDate = s.enrollment_date || 'N/A';
-                        const phone = s.phone_number || 'N/A';
-                        const email = s.email || 'N/A';
-                        const studentName = s.name; // Frappe's internal document name
+                    let rows = teachers.map(t => {
+                        const teacherId = t.teacher_id || 'N/A';
+                        const fullName = t.full_name || 'N/A';
+                        const gender = t.gender || 'N/A';
+                        const dob = t.date_of_birth || 'N/A';
+                        const hireDate = t.hire_date || 'N/A';
+                        const phone = t.phone_number || 'N/A';
+                        const email = t.email || 'N/A';
+                        const teacherName = t.name;
 
-                        if (!studentName) {
-                            console.warn("Student data missing 'name' property:", s);
-                            return ''; // Skip row if essential ID is missing
+                        if (!teacherName) {
+                            console.warn("Teacher data missing 'name' property:", t);
+                            return '';
                         }
 
                         return `
                             <tr>
-                                <td>${studentId}</td>
+                                <td>${teacherId}</td>
                                 <td>${fullName}</td>
                                 <td>${gender}</td>
                                 <td>${dob}</td>
-                                <td>${enrollDate}</td>
+                                <td>${hireDate}</td>
                                 <td>${phone}</td>
                                 <td>${email}</td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-warning btn-action" onclick="editStudent('${studentName}')" title="Edit">
+                                    <button class="btn btn-sm btn-warning btn-action" onclick="editTeacher('${teacherName}')" title="Edit">
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger btn-action" onclick="deleteStudent('${studentName}')" title="Delete">
+                                    <button class="btn btn-sm btn-danger btn-action" onclick="deleteTeacher('${teacherName}')" title="Delete">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </td>
                             </tr>
                         `;
                     }).join('');
-                    studentsTable.innerHTML = rows;
+                    teachersTable.innerHTML = rows;
                 } else {
                     throw new Error("Invalid data format received from API.");
                 }
             } catch (err) {
-                console.error('Error loading students:', err);
-                const errorMsg = err.response?.data?.message || err.message || 'Failed to load students.';
-                studentsTable.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${errorMsg}</td></tr>`;
-                showAlert(`Error loading students: ${errorMsg}`, 'danger');
+                console.error('Error loading teachers:', err);
+                const errorMsg = err.response?.data?.message || err.message || 'Failed to load teachers.';
+                teachersTable.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${errorMsg}</td></tr>`;
+                showAlert(`Error loading teachers: ${errorMsg}`, 'danger');
             }
         }
 
@@ -290,79 +282,75 @@
             e.preventDefault();
             disableSubmitButton(true);
 
-            const studentData = {
-                student_id: studentIdInput.value.trim(),
+            const teacherData = {
+                teacher_id: teacherIdInput.value.trim(),
                 full_name: fullNameInput.value.trim(),
                 gender: genderInput.value,
                 date_of_birth: dobInput.value,
-                enrollment_date: enrollmentDateInput.value,
+                hire_date: hireDateInput.value,
                 phone_number: phoneInput.value.trim(),
                 email: emailInput.value.trim(),
-                doctype: "Student" // Ensure doctype is specified for POST/PUT
+                doctype: "Teacher"
             };
 
-            const studentName = studentNameInput.value;
+            const teacherName = teacherNameInput.value;
             let request;
             let successMessage;
 
-            if (studentName) {
-                // Update (PUT)
-                request = axios.put(`${API_BASE_URL}/${studentName}`, studentData);
-                successMessage = `Student '${studentData.full_name}' updated successfully!`;
+            if (teacherName) {
+                request = axios.put(`${API_BASE_URL}/${teacherName}`, teacherData);
+                successMessage = `Teacher '${teacherData.full_name}' updated successfully!`;
             } else {
-                // Create (POST)
-                request = axios.post(API_BASE_URL, studentData);
-                successMessage = `Student '${studentData.full_name}' added successfully!`;
+                request = axios.post(API_BASE_URL, teacherData);
+                successMessage = `Teacher '${teacherData.full_name}' added successfully!`;
             }
 
             try {
                 await request;
                 showAlert(successMessage, 'success');
                 clearForm();
-                loadStudents(); // Refresh the list
+                loadTeachers();
             } catch (err) {
-                console.error('Error saving student:', err);
-                 let errorMsg = 'Failed to save student.';
-                 if (err.response) {
-                    // Try to get Frappe specific error message
+                console.error('Error saving teacher:', err);
+                let errorMsg = 'Failed to save teacher.';
+                if (err.response) {
                     errorMsg = err.response.data?.message || err.response.data?._server_messages || JSON.stringify(err.response.data);
-                 } else {
+                } else {
                     errorMsg = err.message;
-                 }
-                 showAlert(`Error: ${errorMsg}`, 'danger');
+                }
+                showAlert(`Error: ${errorMsg}`, 'danger');
             } finally {
                 disableSubmitButton(false);
             }
         }
 
-        async function editStudent(name) {
-             // Scroll to top to make form visible
+        async function editTeacher(name) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             try {
                 const res = await axios.get(`${API_BASE_URL}/${name}`);
-                const s = res.data.data;
-                if (s) {
-                    studentIdInput.value = s.student_id || '';
-                    fullNameInput.value = s.full_name || '';
-                    genderInput.value = s.gender || '';
-                    dobInput.value = s.date_of_birth || '';
-                    enrollmentDateInput.value = s.enrollment_date || '';
-                    phoneInput.value = s.phone_number || '';
-                    emailInput.value = s.email || '';
-                    studentNameInput.value = s.name; // Store the docname for PUT request
+                const t = res.data.data;
+                if (t) {
+                    teacherIdInput.value = t.teacher_id || '';
+                    fullNameInput.value = t.full_name || '';
+                    genderInput.value = t.gender || '';
+                    dobInput.value = t.date_of_birth || '';
+                    hireDateInput.value = t.hire_date || '';
+                    phoneInput.value = t.phone_number || '';
+                    emailInput.value = t.email || '';
+                    teacherNameInput.value = t.name;
 
-                    setFormState(true, s.name); // Set form to edit mode
+                    setFormState(true, t.name);
                 } else {
-                     throw new Error("Student data not found in response.");
+                    throw new Error("Teacher data not found in response.");
                 }
             } catch (err) {
-                 console.error(`Error fetching student ${name} for edit:`, err);
-                 const errorMsg = err.response?.data?.message || err.message || 'Failed to load student data for editing.';
-                 showAlert(`Error: ${errorMsg}`, 'danger');
+                console.error(`Error fetching teacher ${name} for edit:`, err);
+                const errorMsg = err.response?.data?.message || err.message || 'Failed to load teacher data for editing.';
+                showAlert(`Error: ${errorMsg}`, 'danger');
             }
         }
 
-        function deleteStudent(name) {
+        function deleteTeacher(name) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -377,20 +365,19 @@
                         await axios.delete(`${API_BASE_URL}/${name}`);
                         Swal.fire(
                             'Deleted!',
-                            'The student record has been deleted.',
+                            'The teacher record has been deleted.',
                             'success'
                         );
-                        // If the deleted student was being edited, clear the form
-                        if (studentNameInput.value === name) {
-                           clearForm();
+                        if (teacherNameInput.value === name) {
+                            clearForm();
                         }
-                        loadStudents(); // Refresh list
+                        loadTeachers();
                     } catch (err) {
-                        console.error(`Error deleting student ${name}:`, err);
-                        const errorMsg = err.response?.data?.message || err.message || 'Failed to delete student.';
+                        console.error(`Error deleting teacher ${name}:`, err);
+                        const errorMsg = err.response?.data?.message || err.message || 'Failed to delete teacher.';
                         Swal.fire(
                             'Error!',
-                            `Could not delete student. ${errorMsg}`,
+                            `Could not delete teacher. ${errorMsg}`,
                             'error'
                         );
                     }
@@ -399,12 +386,11 @@
         }
 
         // --- Event Listeners ---
-        studentForm.addEventListener('submit', handleFormSubmit);
+        teacherForm.addEventListener('submit', handleFormSubmit);
         clearButton.addEventListener('click', clearForm);
 
         // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', loadStudents);
-
+        document.addEventListener('DOMContentLoaded', loadTeachers);
     </script>
 </body>
 </html>

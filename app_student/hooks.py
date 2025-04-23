@@ -6,8 +6,10 @@ app_email = "huanthuytnhh@gmail.com"
 app_license = "mit"
 
 website_route_rules = [
-    {"from_route": "/student", "to_route": "crud_student"}
+    {"from_route": "/student", "to_route": "crud_student"},
+    {"from_route": "/teacher", "to_route": "crud_teacher"}
 ]
+
 # Apps
 # ------------------
 

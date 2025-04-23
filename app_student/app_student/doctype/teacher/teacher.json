@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "autoname": "field:teacher_id",
+ "creation": "2025-04-23 15:18:04.857099",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "teacher_id",
+  "full_name",
+  "gender",
+  "date_of_birth",
+  "email",
+  "phone_number",
+  "hire_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "teacher_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Teacher ID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "label": "Gender",
+   "options": "Male\nFemale\nOther"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "hire_date",
+   "fieldtype": "Date",
+   "label": "Hire Date"
+  }
+ ],
+ "links": [],
+ "modified": "2025-04-23 15:43:05.687230",
+ "modified_by": "huanthuytnhh@gmail.com",
+ "module": "App Student",
+ "name": "Teacher",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "select": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
